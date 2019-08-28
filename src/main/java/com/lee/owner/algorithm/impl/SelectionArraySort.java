@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class SelectionArraySort extends AbstractArraySort {
 
     @Override
-    public <T extends Comparable<T>> T[] doRealSort(T[] arr) {
+    protected <T extends Comparable<T>> T[] doRealSort(T[] arr) {
         for (int i = 0; i < arr.length; i++) {
             for (int j = i; j < arr.length - i; j++) {
                 if (arr[i].compareTo(arr[j]) > 0) {

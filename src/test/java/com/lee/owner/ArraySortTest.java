@@ -15,17 +15,20 @@ import java.util.stream.Stream;
 public class ArraySortTest {
 
     /**
-     * selectArraySort
+     * selectionArraySort
      * bubbleArraySort
      * insertionArraySort
+     * shellArraySort
+     * mergeArraySort
+     * quickArraySort
      */
     @Autowired
-    @Qualifier("insertionArraySort")
+    @Qualifier("quickArraySort")
     private ArraySort sort;
 
     @Test
     public void testArraySort() {
-        int size = 10000;
+        int size = 100000;
         int max = 10000;
 
         Integer[] arr = new Integer[size];

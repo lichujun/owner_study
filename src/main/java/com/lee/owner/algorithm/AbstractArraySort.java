@@ -21,5 +21,5 @@ public abstract class AbstractArraySort implements ArraySort {
      * @param <T> 范型
      * @return 排序好的数组
      */
-    public abstract  <T extends Comparable<T>> T[] doRealSort(T[] arr);
+    protected abstract  <T extends Comparable<T>> T[] doRealSort(T[] arr);
 }

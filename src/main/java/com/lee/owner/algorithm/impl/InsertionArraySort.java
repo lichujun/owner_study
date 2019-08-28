@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 public class InsertionArraySort extends AbstractArraySort {
 
     @Override
-    public <T extends Comparable<T>> T[] doRealSort(T[] arr) {
+    protected <T extends Comparable<T>> T[] doRealSort(T[] arr) {
         for (int i = 1; i < arr.length; i++) {
-            int preIndex = i - 1;
+            int index = i;
             T current = arr[i];
-            for (; preIndex >= 0 && current.compareTo(arr[preIndex]) < 0; preIndex--) {
-                arr[preIndex + 1] = arr[preIndex];
+            for (; index > 0 && current.compareTo(arr[index - 1]) < 0; index--) {
+                arr[index] = arr[index - 1];
             }
-            if (preIndex + 1 < i) {
-                arr[preIndex + 1] = current;
+            if (index < i) {
+                arr[index] = current;
             }
         }
         return arr;
