@@ -25,7 +25,7 @@ public abstract class AbstractConverterContextCommand<S, T> extends AbstractCont
     }
 
     @Override
-    public S transBackData(T target) {
+    public final S transBackData(T target) {
         S source = doRealTransBackData(target);
         if (source == null) {
             return null;
@@ -46,7 +46,7 @@ public abstract class AbstractConverterContextCommand<S, T> extends AbstractCont
 
     @Override
     @SuppressWarnings("unchecked")
-    public S getTransBackData() {
+    public final S getTransBackData() {
         Object value = getLocal(TRANS_BACK_DATA);
         if (value == null) {
             return null;
