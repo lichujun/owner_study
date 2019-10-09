@@ -1,10 +1,10 @@
-package com.lee.owner.command;
+package com.lee.owner.context;
 
 /**
  * @author joseph.li
  * @date 2019-10-08 18:13
  */
-public abstract class AbstractConverterContextCommand<S, T> extends AbstractContextCommand<S, T> implements DataConverter<S, T> {
+public abstract class AbstractConverterContext<S, T> extends AbstractContext implements DataConverter<S, T> {
 
     private static final String TRANS_FOR_DATA = "transForData";
 

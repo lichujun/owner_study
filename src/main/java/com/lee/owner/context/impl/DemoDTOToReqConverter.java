@@ -1,6 +1,6 @@
-package com.lee.owner.command.impl;
+package com.lee.owner.context.impl;
 
-import com.lee.owner.command.AbstractConverterContextCommand;
+import com.lee.owner.context.AbstractConverterContext;
 import com.lee.owner.pojo.dto.DemoDTO;
 import com.lee.owner.pojo.req.DemoReq;
 import org.springframework.beans.BeanUtils;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @date 2019-10-08 19:33
  */
 @Component
-public class DemoDTOToReqConverter extends AbstractConverterContextCommand<DemoDTO, DemoReq> {
+public class DemoDTOToReqConverter extends AbstractConverterContext<DemoDTO, DemoReq> {
 
     @Override
     protected DemoReq doRealTransData(DemoDTO demoDTO) {

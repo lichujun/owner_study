@@ -1,6 +1,6 @@
-package com.lee.owner.command;
+package com.lee.owner.context;
 
-public interface Command {
+public interface Context {
 
     void releaseResource();
 

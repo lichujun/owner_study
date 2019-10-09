@@ -1,4 +1,4 @@
-package com.lee.owner.command;
+package com.lee.owner.context;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +9,9 @@ import java.util.Map;
  * @date 2019-10-08 18:09
  */
 @Slf4j
-public abstract class AbstractContextCommand<S, T> implements Command {
+public abstract class AbstractContext implements Context {
 
-    private ThreadLocal<Map<String, Object>> buffer = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<Map<String, Object>> buffer = ThreadLocal.withInitial(() -> null);
 
     @Override
     public final void releaseResource() {
