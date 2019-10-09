@@ -25,7 +25,7 @@ public class ArraySortTest {
      * heapArraySort            堆排序
      */
     @Autowired
-    @Qualifier("heapArraySort")
+    @Qualifier("insertionArraySort")
     private ArraySort sort;
 
     @Test
