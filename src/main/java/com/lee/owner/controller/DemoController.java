@@ -3,6 +3,7 @@ package com.lee.owner.controller;
 import com.lee.owner.context.DataConverter;
 import com.lee.owner.pojo.dto.DemoDTO;
 import com.lee.owner.pojo.req.DemoReq;
+import com.lee.owner.register.demo.Demo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +18,18 @@ public class DemoController {
 
     private final DataConverter<DemoDTO, DemoReq> dataConverter;
 
-    public DemoController(DataConverter<DemoDTO, DemoReq> dataConverter) {
+    private final Demo demo;
+
+    public DemoController(DataConverter<DemoDTO, DemoReq> dataConverter, Demo demo) {
         this.dataConverter = dataConverter;
+        this.demo = demo;
+    }
+
+    @RequestMapping("/hello")
+    public String hello() {
+        demo.doSomething();
+        demo.test();
+        return "hello";
     }
 
     @RequestMapping("/converterBackDemo")
