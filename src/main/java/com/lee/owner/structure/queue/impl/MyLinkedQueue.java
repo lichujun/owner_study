@@ -1,6 +1,6 @@
-package com.lee.owner.structure.impl;
+package com.lee.owner.structure.queue.impl;
 
-import com.lee.owner.structure.Queue;
+import com.lee.owner.structure.queue.Queue;
 
 /**
  * 链表队列消息

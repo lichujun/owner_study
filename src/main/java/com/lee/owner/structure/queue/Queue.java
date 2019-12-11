@@ -1,4 +1,4 @@
-package com.lee.owner.structure;
+package com.lee.owner.structure.queue;
 
 /**
  * 队列
