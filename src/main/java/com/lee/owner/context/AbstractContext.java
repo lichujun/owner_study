@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractContext<K, V> implements Context<K, V> {
 
-    private static final ThreadLocal<Map<Object, Object>> BUFFER = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<Map<Object, Object>> BUFFER = ThreadLocal.withInitial(() -> null);
 
     @SuppressWarnings("unchecked")
     private final Class<V> vClazz = (Class<V>) GenericsUtils.getSuperClassGenericType(getClass(), 1);
