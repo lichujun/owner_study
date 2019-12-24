@@ -13,14 +13,14 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractContext<K, V> implements Context<K, V> {
 
-    private final ThreadLocal<Map<Object, Object>> BUFFER = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<Map<Object, Object>> buffer = ThreadLocal.withInitial(() -> null);
 
     @SuppressWarnings("unchecked")
     private final Class<V> vClazz = (Class<V>) GenericsUtils.getSuperClassGenericType(getClass(), 1);
 
     @Override
     public final void releaseResource() {
-        BUFFER.remove();
+        buffer.remove();
     }
 
     /**
@@ -29,12 +29,12 @@ public abstract class AbstractContext<K, V> implements Context<K, V> {
      * @param value value
      */
     private void setLocal(Object key, Object value) {
-        Map<Object, Object> localMap = BUFFER.get();
+        Map<Object, Object> localMap = buffer.get();
         if (localMap == null) {
             localMap = Maps.newHashMap();
         }
         localMap.put(key, value);
-        BUFFER.set(localMap);
+        buffer.set(localMap);
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class AbstractContext<K, V> implements Context<K, V> {
      * @return value
      */
     private Object getLocal(Object key) {
-        Map<Object, Object> localMap = BUFFER.get();
+        Map<Object, Object> localMap = buffer.get();
         if (localMap == null) {
             return null;
         }
