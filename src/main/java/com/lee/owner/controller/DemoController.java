@@ -1,8 +1,5 @@
 package com.lee.owner.controller;
 
-import com.lee.owner.context.DataConverter;
-import com.lee.owner.pojo.dto.DemoDTO;
-import com.lee.owner.pojo.req.DemoReq;
 import com.lee.owner.register.demo.Demo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DemoController {
 
-    private final DataConverter<DemoDTO, DemoReq> dataConverter;
-
     private final Demo demo;
 
-    public DemoController(DataConverter<DemoDTO, DemoReq> dataConverter, Demo demo) {
-        this.dataConverter = dataConverter;
+    public DemoController(Demo demo) {
         this.demo = demo;
     }
 
@@ -32,22 +26,4 @@ public class DemoController {
         return "hello";
     }
 
-    @RequestMapping("/converterBackDemo")
-    public Object converterBackDemo() {
-        DemoReq demoReq = new DemoReq()
-                .setName("joseph");
-        DemoDTO demoDTO = dataConverter.transBackData(demoReq);
-        log.info("{}", dataConverter.getTransBackData());
-        return demoDTO;
-    }
-
-    @RequestMapping("/converterForDemo")
-    public Object converterForDemo() {
-        DemoDTO demoDTO = new DemoDTO()
-                .setName("joseph")
-                .setAge(12);
-        DemoReq demoReq = dataConverter.transForData(demoDTO);
-        log.info("{}", dataConverter.getTransForData());
-        return demoReq;
-    }
 }

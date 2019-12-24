@@ -1,10 +1,22 @@
 package com.lee.owner.context;
 
-public interface Context {
+/**
+ * 数据存储
+ * @param <K> Key
+ * @param <V> Value
+ * @author joseph.li
+ */
+public interface Context<K, V> {
 
+    /**
+     * 释放资源
+     */
     void releaseResource();
 
-    void setLocal(String key, Object value);
-
-    Object getLocal(String key);
+    /**
+     * 获取数据
+     * @param k key
+     * @return value
+     */
+    V getData(K k);
 }
