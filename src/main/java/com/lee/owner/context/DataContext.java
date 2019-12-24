@@ -1,12 +1,12 @@
 package com.lee.owner.context;
 
 /**
- * 数据存储
+ * 上下文数据
  * @param <K> Key
  * @param <V> Value
  * @author joseph.li
  */
-public interface Context<K, V> {
+public interface DataContext<K, V> {
 
     /**
      * 释放资源

@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 
 /**
- * context抽象类
+ * DataContext抽象类
  * @author joseph.li
  * @date 2019-10-08 18:09
  */
 @Slf4j
-public abstract class AbstractContext<K, V> implements Context<K, V> {
+public abstract class AbstractDataContext<K, V> implements DataContext<K, V> {
 
     private final ThreadLocal<Map<Object, Object>> buffer = ThreadLocal.withInitial(() -> null);
 
