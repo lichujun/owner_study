@@ -21,6 +21,7 @@
         <collections4.version>4.4</collections4.version>
         <mybatis.version>2.1.0</mybatis.version>
         <commons-lang3.version>3.9</commons-lang3.version>
+        <netty.version>4.1.44.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -67,6 +68,20 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>${collections4.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.11</version>
         </dependency>
 
         <dependency>
