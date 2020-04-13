@@ -14,6 +14,8 @@ import org.springframework.core.type.AnnotationMetadata;
  * @date 2019/10/20 12:16 PM
  */
 public class DemoRegister implements ImportBeanDefinitionRegistrar {
+
+    @SuppressWarnings("NullableProblems")
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(DemoScan.class.getName()));
@@ -21,8 +23,7 @@ public class DemoRegister implements ImportBeanDefinitionRegistrar {
             return;
         }
         String[] basePackages = attributes.getStringArray("basePackages");
-        DemoScanner demoScanner = new DemoScanner(beanDefinitionRegistry);
-        demoScanner.setFactoryClass(DemoFactoryBean.class);
+        DemoScanner demoScanner = new DemoScanner(beanDefinitionRegistry, DemoFactoryBean.class);
         demoScanner.registerFilters();
         demoScanner.scan(basePackages);
     }

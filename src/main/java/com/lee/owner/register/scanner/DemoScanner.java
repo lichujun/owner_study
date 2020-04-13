@@ -1,7 +1,6 @@
 package com.lee.owner.register.scanner;
 
 import com.lee.owner.register.DemoFactoryBean;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -17,13 +16,13 @@ import java.util.Set;
  * @date 2019/10/20 12:20 PM
  */
 @Slf4j
-@Setter
 public class DemoScanner extends ClassPathBeanDefinitionScanner {
 
-    private Class<? extends DemoFactoryBean> factoryClass;
+    private final Class<? extends DemoFactoryBean> factoryClass;
 
-    public DemoScanner(BeanDefinitionRegistry registry) {
+    public DemoScanner(BeanDefinitionRegistry registry, Class<? extends DemoFactoryBean> factoryClass) {
         super(registry, false);
+        this.factoryClass = factoryClass;
     }
 
     public void registerFilters() {
