@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee.owner.repository.mapper.ProduceTaskMapper">
+  <resultMap id="BaseResultMap" type="com.lee.owner.repository.model.ProduceTask">
+    <!--@mbg.generated-->
+    <!--@Table t_produce_task-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="date" jdbcType="BIGINT" property="date" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
+    <result column="separator" jdbcType="SMALLINT" property="separator" />
+    <result column="separator_detail" jdbcType="VARCHAR" property="separatorDetail" />
+    <result column="produce_status" jdbcType="TINYINT" property="produceStatus" />
+    <result column="produce_deatail" jdbcType="VARCHAR" property="produceDeatail" />
+    <result column="current_produce_id" jdbcType="BIGINT" property="currentProduceId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="cas_version" jdbcType="BIGINT" property="casVersion" />
+    <result column="extend_info" jdbcType="VARCHAR" property="extendInfo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `date`, `type`, `separator`, separator_detail, produce_status, produce_deatail, 
+    current_produce_id, create_time, update_time, cas_version, extend_info
+  </sql>
+</mapper>

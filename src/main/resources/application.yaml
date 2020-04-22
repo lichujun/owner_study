@@ -1,2 +1,10 @@
 server:
   port: 9000
+
+spring:
+  datasource:
+    demo:
+      url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
