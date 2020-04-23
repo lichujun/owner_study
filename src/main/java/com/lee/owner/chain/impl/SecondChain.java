@@ -7,7 +7,7 @@ import com.lee.owner.chain.DemoReq;
  * @author joseph.li
  * @date 2020/4/23 5:15 下午
  */
-public class SecondChain extends BaseChain {
+public class SecondChain extends BaseChain<DemoReq> {
 
     @Override
     protected DemoReq doExecute(DemoReq demoReq) {

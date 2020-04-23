@@ -4,9 +4,9 @@ package com.lee.owner.chain;
  * @author joseph.li
  * @date 2020/4/23 5:12 下午
  */
-public interface DemoChain {
+public interface DemoChain<T> {
 
-    DemoReq execute(DemoReq demoReq);
+    T execute(T t);
 
-    DemoChain addNext(DemoChain demoChain);
+    DemoChain<T> addNext(DemoChain<T> demoChain);
 }
