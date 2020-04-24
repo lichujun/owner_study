@@ -67,12 +67,10 @@ public class GenericsUtils {
     public static Class<?> getSuperClassGenericType(Class<?> clazz, Class<?> parentClazz, int index) {
         Type genType;
         Type newGenType;
-        ParameterizedType parameterizedType;
         for (; clazz != Object.class;) {
             genType = clazz.getGenericSuperclass();
             if (genType instanceof ParameterizedType) {
-                parameterizedType = ((ParameterizedType) genType);
-                newGenType = parameterizedType.getRawType();
+                newGenType = ((ParameterizedType) genType).getRawType();
             } else {
                 newGenType = genType;
             }
