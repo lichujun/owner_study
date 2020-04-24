@@ -2,7 +2,6 @@ package com.lee.owner.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -12,39 +11,39 @@ import java.lang.reflect.Type;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GenericsUtils {
+
     /**
-     * 通过反射,获得定义Class时声明的父类的范型参数的类型.
-     * 如public BookManager extends GenricManager<Book>
-     *
-     * @param clazz The class to introspect
-     * @return the first generic declaration, or <code>Object.class</code> if cannot be determined
+     * 通过对象获取父类范型的class对象
+     * @param obj obj对象
+     * @return 父类范型的class对象
      */
-    public static Class<?> getSuperClassGenericType(Class<?> clazz) {
-        return getSuperClassGenericType(clazz, 0);
+    public static Class<?> getSuperClassGenericType(Object obj) {
+        return getSuperClassGenericType(obj, 0);
     }
 
     /**
-     * 通过反射,获得定义Class时声明的父类的范型参数的类型.
-     * 如public BookManager extends GenricManager<Book>
-     *
-     * @param clazz clazz The class to introspect
-     * @param index the Index of the generic ddeclaration,start from 0.
+     * 通过对象获取父类范型的class对象
+     * @param obj obj对象
+     * @param index 第几个范型
+     * @return 父类范型的class对象
      */
-    public static Class<?> getSuperClassGenericType(Class<?> clazz, int index) throws IndexOutOfBoundsException {
-
+    public static Class<?> getSuperClassGenericType(Object obj, int index) throws IndexOutOfBoundsException {
+        Class<?> clazz = obj.getClass();
         Type genType = clazz.getGenericSuperclass();
-
         return getSuperClassGenericType(genType, index);
-
     }
 
+    /**
+     * 通过父类的Type对象获取范型的class对象
+     * @param genType 父类的Type对象
+     * @param index 第几个范型
+     * @return 父类范型的class对象
+     */
     private static Class<?> getSuperClassGenericType(Type genType, int index) {
         if (!(genType instanceof ParameterizedType)) {
             return Object.class;
         }
-
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
-
         if (index >= params.length || index < 0) {
             return Object.class;
         }
@@ -55,35 +54,5 @@ public class GenericsUtils {
             return Object.class;
         }
         return (Class<?>) clazzType;
-    }
-
-    /**
-     * 通过反射,获得定义Class时获取指定父类的范型参数的类型.
-     * 如public BookManager extends GenricManager<Book>
-     *
-     * @param clazz clazz The class to introspect
-     * @param index the Index of the generic ddeclaration,start from 0.
-     */
-    public static Class<?> getSuperClassGenericType(Class<?> clazz, Class<?> parentClazz, int index) {
-        Type genType;
-        Type newGenType;
-        for (; clazz != Object.class;) {
-            genType = clazz.getGenericSuperclass();
-            if (genType instanceof ParameterizedType) {
-                newGenType = ((ParameterizedType) genType).getRawType();
-            } else {
-                newGenType = genType;
-            }
-
-            if (newGenType == parentClazz) {
-                return getSuperClassGenericType(genType, index);
-            }
-            if (newGenType instanceof Class) {
-                clazz = (Class<?>) newGenType;
-            } else {
-                return Object.class;
-            }
-        }
-        return Object.class;
     }
 }
