@@ -1,13 +1,15 @@
 package com.lee.owner.chain.impl;
 
-import com.lee.owner.chain.BaseChain;
 import com.lee.owner.chain.DemoReq;
+import org.springframework.stereotype.Component;
 
 /**
  * @author joseph.li
  * @date 2020/4/23 5:15 下午
  */
-public class ThirdChain extends BaseChain<DemoReq> {
+@ChainMark(3)
+@Component
+public class ThirdChain extends AbstractDemoChain {
 
     @Override
     protected DemoReq doExecute(DemoReq demoReq) {
