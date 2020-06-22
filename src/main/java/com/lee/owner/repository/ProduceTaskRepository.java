@@ -23,8 +23,7 @@ public class ProduceTaskRepository {
         ((ProduceTaskRepository) AopContext.currentProxy()).test1(count);
     }
 
-
-    private void test1(long count) {
+    public void test1(long count) {
        test2(count);
     }
 
@@ -35,8 +34,6 @@ public class ProduceTaskRepository {
         UpdateWrapper<ProduceTask> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", 1);
         produceTaskMapper.update(produceTask, updateWrapper);
-        if (count == 3) {
-            throw new RuntimeException();
-        }
+        throw new RuntimeException();
     }
 }
