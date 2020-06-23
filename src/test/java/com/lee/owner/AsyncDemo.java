@@ -63,10 +63,31 @@ public class AsyncDemo {
             }
         });
 
-        oneProducer.produceMessage(one::getAndIncrement);
-        twoProducer.produceMessage(two::getAndIncrement);
-        threeProducer.produceMessage(three::getAndIncrement);
+        oneProducer.produceMessage(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        /*twoProducer.produceMessage(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return two.getAndIncrement();
+        });
+        threeProducer.produceMessage(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return three.getAndIncrement();
+        });*/
 
-        Thread.sleep(10000);
+        Thread.sleep(20000);
     }
 }
