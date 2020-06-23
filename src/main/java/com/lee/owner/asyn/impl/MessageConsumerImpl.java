@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -24,6 +25,8 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
 
     private final ExecutorService workThreadPool;
 
+    private final AtomicInteger consumerStatus;
+
     public MessageConsumerImpl(BlockingQueue<T> queue) {
         this(queue, 4);
     }
@@ -31,6 +34,7 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
     public MessageConsumerImpl(BlockingQueue<T> queue, Integer consumerThreadSize) {
         this.queue = queue;
         this.consumerThreadSize = consumerThreadSize;
+        consumerStatus = new AtomicInteger();
         workThreadPool = new ThreadPoolExecutor(consumerThreadSize, consumerThreadSize,
                 THREAD_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<>(),
                 new DefaultThreadFactory("message-consumer"), new ThreadPoolExecutor.AbortPolicy());
@@ -38,6 +42,10 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
 
     @Override
     public void consumerMessage(Consumer<T> consumer) {
+        if (!canConsume()) {
+            log.info("is consuming");
+            return;
+        }
         for (int i = 0; i < consumerThreadSize; i++) {
             workThreadPool.execute(() -> {
                 while (true){
@@ -52,6 +60,10 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
         if (size <= 0) {
             throw new UnsupportedOperationException("size can not be below 0");
         }
+        if (!canConsume()) {
+            log.info("is consuming");
+            return;
+        }
         for (int i = 0; i < consumerThreadSize; i++) {
             workThreadPool.execute(() -> {
                 while (true) {
@@ -63,6 +75,13 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
                 }
             });
         }
+    }
+
+    private boolean canConsume() {
+        if (consumerStatus.get() > 0) {
+            return false;
+        }
+        return consumerStatus.compareAndSet(0, 1);
     }
 
     private T getMessage() {

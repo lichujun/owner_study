@@ -5,7 +5,6 @@ import com.lee.owner.asyn.MessageProducer;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
@@ -34,6 +33,8 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     private final AtomicInteger produceNullCount;
 
+    private final AtomicInteger produceStatus;
+
     public MessageProducerImpl(BlockingQueue<T> queue) {
         this(queue, 4);
     }
@@ -42,6 +43,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
         this.queue = queue;
         this.produceThreadSize = produceThreadSize;
         produceNullCount = new AtomicInteger();
+        produceStatus = new AtomicInteger();
         ioThreadPool = new ThreadPoolExecutor(produceThreadSize, produceThreadSize,
                 THREAD_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<>(),
                 new DefaultThreadFactory("message-producer"), new ThreadPoolExecutor.AbortPolicy());
@@ -49,6 +51,10 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     @Override
     public void produceMessage(Supplier<T> supplier) {
+        if (!canProduce()) {
+            log.info("is producing");
+            return;
+        }
         for (int i = 0; i < produceThreadSize; i++) {
             ioThreadPool.execute(() -> {
                 while (true) {
@@ -65,6 +71,10 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     @Override
     public void produceBatchMessage(Supplier<Collection<T>> supplier) {
+        if (!canProduce()) {
+            log.info("is producing");
+            return;
+        }
         for (int i = 0; i < produceThreadSize; i++) {
             ioThreadPool.execute(() -> {
                 while (true) {
@@ -79,6 +89,13 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                 }
             });
         }
+    }
+
+    private boolean canProduce() {
+        if (produceStatus.get() > 0) {
+            return false;
+        }
+        return produceStatus.compareAndSet(0, 1);
     }
 
     private void produceNullWait() {

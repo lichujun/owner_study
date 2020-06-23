@@ -69,7 +69,7 @@ public class AsyncDemo {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return null;
+            return one.getAndIncrement();
         });
         /*twoProducer.produceMessage(() -> {
             try {
@@ -88,6 +88,6 @@ public class AsyncDemo {
             return three.getAndIncrement();
         });*/
 
-        Thread.sleep(20000);
+        Thread.sleep(10000);
     }
 }
