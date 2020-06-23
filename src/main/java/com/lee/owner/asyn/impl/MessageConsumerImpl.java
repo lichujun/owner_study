@@ -2,12 +2,12 @@ package com.lee.owner.asyn.impl;
 
 import com.google.common.collect.Lists;
 import com.lee.owner.asyn.MessageConsumer;
+import com.lee.owner.asyn.MessageProcessor;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -25,7 +25,7 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
 
     private final ExecutorService workThreadPool;
 
-    private final AtomicInteger consumerStatus;
+    private final MessageProcessor messageProcessor;
 
     public MessageConsumerImpl(BlockingQueue<T> queue) {
         this(queue, 4);
@@ -34,7 +34,7 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
     public MessageConsumerImpl(BlockingQueue<T> queue, Integer consumerThreadSize) {
         this.queue = queue;
         this.consumerThreadSize = consumerThreadSize;
-        consumerStatus = new AtomicInteger();
+        messageProcessor = new MessageProcessorImpl();
         workThreadPool = new ThreadPoolExecutor(consumerThreadSize, consumerThreadSize,
                 THREAD_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<>(),
                 new DefaultThreadFactory("message-consumer"), new ThreadPoolExecutor.AbortPolicy());
@@ -42,14 +42,18 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
 
     @Override
     public void consumerMessage(Consumer<T> consumer) {
-        if (!canConsume()) {
+        if (!messageProcessor.canProcess()) {
             log.info("is consuming");
             return;
         }
         for (int i = 0; i < consumerThreadSize; i++) {
             workThreadPool.execute(() -> {
                 while (true){
-                    consumer.accept(getMessage());
+                    try {
+                        consumer.accept(getMessage());
+                    } catch (Throwable e) {
+                        log.error("consume error", e);
+                    }
                 }
             });
         }
@@ -60,7 +64,7 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
         if (size <= 0) {
             throw new UnsupportedOperationException("size can not be below 0");
         }
-        if (!canConsume()) {
+        if (!messageProcessor.canProcess()) {
             log.info("is consuming");
             return;
         }
@@ -71,17 +75,14 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
                     for (int j = 0; j < size; j++) {
                         list.add(getMessage());
                     }
-                    consumer.accept(list);
+                    try {
+                        consumer.accept(list);
+                    } catch (Throwable e) {
+                        log.error("consume error", e);
+                    }
                 }
             });
         }
-    }
-
-    private boolean canConsume() {
-        if (consumerStatus.get() > 0) {
-            return false;
-        }
-        return consumerStatus.compareAndSet(0, 1);
     }
 
     private T getMessage() {

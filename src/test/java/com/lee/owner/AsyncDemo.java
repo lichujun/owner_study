@@ -33,9 +33,9 @@ public class AsyncDemo {
         MessageConsumer<Integer> twoConsumer = new MessageConsumerImpl<>(twoQueue);
         MessageConsumer<Integer> threeConsumer = new MessageConsumerImpl<>(threeQueue);
 
-        AtomicInteger one = new AtomicInteger(1);
-        AtomicInteger two = new AtomicInteger(1);
-        AtomicInteger three = new AtomicInteger(1);
+        AtomicInteger one = new AtomicInteger();
+        AtomicInteger two = new AtomicInteger();
+        AtomicInteger three = new AtomicInteger();
 
 
         oneConsumer.consumerMessage(it -> {
@@ -69,7 +69,11 @@ public class AsyncDemo {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return one.getAndIncrement();
+            int count = one.incrementAndGet();
+            if (count % 2 == 0) {
+                throw new RuntimeException();
+            }
+            return count;
         });
         /*twoProducer.produceMessage(() -> {
             try {
