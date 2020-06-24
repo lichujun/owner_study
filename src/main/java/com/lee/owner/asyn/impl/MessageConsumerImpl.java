@@ -5,6 +5,7 @@ import com.lee.owner.asyn.MessageConsumer;
 import com.lee.owner.asyn.MessageProcessAssistant;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
@@ -50,7 +51,10 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
             workThreadPool.execute(() -> {
                 while (true){
                     try {
-                        consumer.accept(getMessage());
+                        T t = takeMessage();
+                        if (t != null) {
+                            consumer.accept(t);
+                        }
                     } catch (Throwable e) {
                         log.error("consume error", e);
                     }
@@ -72,20 +76,36 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
             workThreadPool.execute(() -> {
                 while (true) {
                     List<T> list = Lists.newArrayList();
+                    T t;
                     for (int j = 0; j < size; j++) {
-                        list.add(getMessage());
+                        t = pollMessage();
+                        if (t == null) {
+                            break;
+                        }
+                        list.add(t);
                     }
-                    try {
-                        consumer.accept(list);
-                    } catch (Throwable e) {
-                        log.error("consume error", e);
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        try {
+                            consumer.accept(list);
+                        } catch (Throwable e) {
+                            log.error("consume error", e);
+                        }
                     }
                 }
             });
         }
     }
 
-    private T getMessage() {
+    private T pollMessage() {
+        try {
+            return queue.poll(100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            log.error("poll message error", e);
+            return null;
+        }
+    }
+
+    private T takeMessage() {
         try {
             return queue.take();
         } catch (InterruptedException e) {

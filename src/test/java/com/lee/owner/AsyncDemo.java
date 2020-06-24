@@ -38,14 +38,14 @@ public class AsyncDemo {
         AtomicInteger three = new AtomicInteger();
 
 
-        oneConsumer.consumerMessage(it -> {
+        oneConsumer.consumerBatchMessage(it -> {
             log.info("one consumer:{}", it);
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
+        }, 10);
         twoConsumer.consumerMessage(it -> {
             log.info("two consumer:{}", it);
             try {
@@ -69,11 +69,11 @@ public class AsyncDemo {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            int count = one.incrementAndGet();
-            if (count % 2 == 0) {
-                throw new RuntimeException();
+            int a = one.incrementAndGet();
+            if (a >= 10) {
+                return null;
             }
-            return count;
+            return a;
         });
         /*twoProducer.produceMessage(() -> {
             try {
@@ -92,6 +92,6 @@ public class AsyncDemo {
             return three.getAndIncrement();
         });*/
 
-        Thread.sleep(10000);
+        Thread.sleep(2000);
     }
 }

@@ -81,6 +81,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                         collection = supplier.get();
                     } catch (Throwable e) {
                         log.error("produce error", e);
+                        messageProcessAssistant.processWait();
                         return;
                     }
                     if (CollectionUtils.isEmpty(collection)) {
@@ -101,9 +102,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                 return;
             }
             queue.put(t);
-            synchronized (this) {
-                messageProcessAssistant.initProcessCount();
-            }
+            messageProcessAssistant.initProcessCount();
         } catch (InterruptedException e) {
             log.error("put message error", e);
         }
