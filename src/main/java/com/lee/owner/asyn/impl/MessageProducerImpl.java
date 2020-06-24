@@ -1,6 +1,6 @@
 package com.lee.owner.asyn.impl;
 
-import com.lee.owner.asyn.MessageProcessor;
+import com.lee.owner.asyn.MessageProcessAssistant;
 import com.lee.owner.asyn.MessageProducer;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     private final ExecutorService ioThreadPool;
 
-    private final MessageProcessor messageProcessor;
+    private final MessageProcessAssistant messageProcessAssistant;
 
 
     public MessageProducerImpl(BlockingQueue<T> queue) {
@@ -37,12 +37,12 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
         ioThreadPool = new ThreadPoolExecutor(produceThreadSize, produceThreadSize,
                 THREAD_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<>(),
                 new DefaultThreadFactory("message-producer"), new ThreadPoolExecutor.AbortPolicy());
-        this.messageProcessor = new MessageProcessorImpl();
+        this.messageProcessAssistant = new MessageProcessAssistantImpl();
     }
 
     @Override
     public void produceMessage(Supplier<T> supplier) {
-        if (!messageProcessor.canProcess()) {
+        if (!messageProcessAssistant.canProcess()) {
             log.info("is producing");
             return;
         }
@@ -54,10 +54,11 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                         message = supplier.get();
                     } catch (Throwable e) {
                         log.error("produce error", e);
+                        messageProcessAssistant.processWait();
                         continue;
                     }
                     if (message == null) {
-                        messageProcessor.processEmptyWait();
+                        messageProcessAssistant.processWait();
                         continue;
                     }
                     putMessage(message);
@@ -68,7 +69,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     @Override
     public void produceBatchMessage(Supplier<Collection<T>> supplier) {
-        if (!messageProcessor.canProcess()) {
+        if (!messageProcessAssistant.canProcess()) {
             log.info("is producing");
             return;
         }
@@ -83,7 +84,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                         return;
                     }
                     if (CollectionUtils.isEmpty(collection)) {
-                        messageProcessor.processEmptyWait();
+                        messageProcessAssistant.processWait();
                         continue;
                     }
                     for (T t : collection) {
@@ -101,7 +102,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
             }
             queue.put(t);
             synchronized (this) {
-                messageProcessor.initProcessEmptyCount();
+                messageProcessAssistant.initProcessCount();
             }
         } catch (InterruptedException e) {
             log.error("put message error", e);
