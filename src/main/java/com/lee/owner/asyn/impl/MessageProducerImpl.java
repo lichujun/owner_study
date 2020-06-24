@@ -2,6 +2,7 @@ package com.lee.owner.asyn.impl;
 
 import com.lee.owner.asyn.MessageProcessAssistant;
 import com.lee.owner.asyn.MessageProducer;
+import com.lee.owner.utils.JackSonUtils;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,17 +27,16 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
 
     private final MessageProcessAssistant messageProcessAssistant;
 
-
-    public MessageProducerImpl(BlockingQueue<T> queue) {
-        this(queue, 4);
+    public MessageProducerImpl(BlockingQueue<T> queue, String threadPoolName) {
+        this(queue, 4, threadPoolName);
     }
 
-    public MessageProducerImpl(BlockingQueue<T> queue, Integer produceThreadSize) {
+    public MessageProducerImpl(BlockingQueue<T> queue, Integer produceThreadSize, String threadPoolName) {
         this.queue = queue;
         this.produceThreadSize = produceThreadSize;
         ioThreadPool = new ThreadPoolExecutor(produceThreadSize, produceThreadSize,
                 THREAD_KEEP_ALIVE_TIME, TimeUnit.SECONDS, new SynchronousQueue<>(),
-                new DefaultThreadFactory("message-producer"), new ThreadPoolExecutor.AbortPolicy());
+                new DefaultThreadFactory(threadPoolName), new ThreadPoolExecutor.AbortPolicy());
         this.messageProcessAssistant = new MessageProcessAssistantImpl();
     }
 
@@ -49,19 +49,11 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
         for (int i = 0; i < produceThreadSize; i++) {
             ioThreadPool.execute(() -> {
                 while (true) {
-                    T message;
                     try {
-                        message = supplier.get();
+                        doProduceMessage(supplier);
                     } catch (Throwable e) {
-                        log.error("produce error", e);
-                        messageProcessAssistant.processWait();
-                        continue;
+                        log.error("produce occur unknown error", e);
                     }
-                    if (message == null) {
-                        messageProcessAssistant.processWait();
-                        continue;
-                    }
-                    putMessage(message);
                 }
             });
         }
@@ -76,25 +68,50 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
         for (int i = 0; i < produceThreadSize; i++) {
             ioThreadPool.execute(() -> {
                 while (true) {
-                    Collection<T> collection;
                     try {
-                        collection = supplier.get();
+                        doProduceBatchMessage(supplier);
                     } catch (Throwable e) {
-                        log.error("produce error", e);
-                        messageProcessAssistant.processWait();
-                        return;
-                    }
-                    if (CollectionUtils.isEmpty(collection)) {
-                        messageProcessAssistant.processWait();
-                        continue;
-                    }
-                    for (T t : collection) {
-                        putMessage(t);
+                        log.error("produce occur unknown error", e);
                     }
                 }
             });
         }
     }
+
+    private void doProduceMessage(Supplier<T> supplier) {
+        T message;
+        try {
+            message = supplier.get();
+        } catch (Throwable e) {
+            log.error("produce error", e);
+            messageProcessAssistant.processWait();
+            return;
+        }
+        if (message == null) {
+            messageProcessAssistant.processWait();
+            return;
+        }
+        putMessage(message);
+    }
+
+    private void doProduceBatchMessage(Supplier<Collection<T>> supplier) {
+        Collection<T> collection;
+        try {
+            collection = supplier.get();
+        } catch (Throwable e) {
+            log.error("produce error", e);
+            messageProcessAssistant.processWait();
+            return;
+        }
+        if (CollectionUtils.isEmpty(collection)) {
+            messageProcessAssistant.processWait();
+            return;
+        }
+        for (T t : collection) {
+            putMessage(t);
+        }
+    }
+
 
     private void putMessage(T t) {
         try {
@@ -102,6 +119,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
                 return;
             }
             queue.put(t);
+            log.info("produce message:{}", JackSonUtils.writeValueAsString(t));
             messageProcessAssistant.initProcessCount();
         } catch (InterruptedException e) {
             log.error("put message error", e);

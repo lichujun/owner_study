@@ -25,13 +25,13 @@ public class AsyncDemo {
         BlockingQueue<Integer> threeQueue = new LinkedBlockingQueue<>();
 
 
-        MessageProducer<Integer> oneProducer = new MessageProducerImpl<>(oneQueue);
-        MessageProducer<Integer> twoProducer = new MessageProducerImpl<>(twoQueue);
-        MessageProducer<Integer> threeProducer = new MessageProducerImpl<>(threeQueue);
+        MessageProducer<Integer> oneProducer = new MessageProducerImpl<>(oneQueue, "one-producer");
+        MessageProducer<Integer> twoProducer = new MessageProducerImpl<>(twoQueue, "two-producer");
+        MessageProducer<Integer> threeProducer = new MessageProducerImpl<>(threeQueue, "three-producer");
 
-        MessageConsumer<Integer> oneConsumer = new MessageConsumerImpl<>(oneQueue);
-        MessageConsumer<Integer> twoConsumer = new MessageConsumerImpl<>(twoQueue);
-        MessageConsumer<Integer> threeConsumer = new MessageConsumerImpl<>(threeQueue);
+        MessageConsumer<Integer> oneConsumer = new MessageConsumerImpl<>(oneQueue, "one-consumer");
+        MessageConsumer<Integer> twoConsumer = new MessageConsumerImpl<>(twoQueue, "two-consumer");
+        MessageConsumer<Integer> threeConsumer = new MessageConsumerImpl<>(threeQueue, "three-consumer");
 
         AtomicInteger one = new AtomicInteger();
         AtomicInteger two = new AtomicInteger();
