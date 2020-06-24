@@ -75,12 +75,15 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
         for (int i = 0; i < consumerThreadSize; i++) {
             workThreadPool.execute(() -> {
                 while (true) {
-                    List<T> list = Lists.newArrayList();
+                    List<T> list = null;
                     T t;
                     for (int j = 0; j < size; j++) {
                         t = pollMessage();
                         if (t == null) {
                             break;
+                        }
+                        if (list == null) {
+                            list = Lists.newArrayList();
                         }
                         list.add(t);
                     }
@@ -90,6 +93,8 @@ public class MessageConsumerImpl<T> implements MessageConsumer<T> {
                         } catch (Throwable e) {
                             log.error("consume error", e);
                         }
+                    } else {
+                        log.info("poll message empty");
                     }
                 }
             });
