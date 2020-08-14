@@ -44,7 +44,9 @@ public class ReverseSolution {
         int res = 0;
         int pop;
         while (x != 0) {
-            if (res > MAX || res < MIN) {
+            if (res < MIN || (res == MIN && x > 8)) {
+                return 0;
+            } else if (res > MAX || (res == MAX && x > 7)) {
                 return 0;
             }
             pop = x % 10;
