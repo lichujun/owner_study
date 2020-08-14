@@ -7,7 +7,7 @@ package com.lee.owner.leetcode;
 public class ZConvertSolution {
 
     public static void main(String[] args) {
-        System.out.println(new ZConvertSolution().convert("PAYPALISHIRING", 3));
+        System.out.println(new ZConvertSolution().convert1("PAYPALISHIRING", 3));
     }
 
     public String convert(String s, int numRows) {
@@ -37,5 +37,32 @@ public class ZConvertSolution {
             }
         }
         return new String(chars);
+    }
+
+    public String convert1(String s, int numRows) {
+        int length = s.length();
+        if (length <= numRows || numRows <= 1) {
+            return s;
+        }
+        StringBuilder[] builders = new StringBuilder[numRows];
+        for (int i = 0; i < numRows; i++) {
+            builders[i] = new StringBuilder();
+        }
+        int flag = -1;
+        int i = 0;
+        for (char ch : s.toCharArray()) {
+            builders[i].append(ch);
+            if (i == 0 || i == numRows - 1) {
+                flag = - flag;
+            }
+            i += flag;
+        }
+        StringBuilder stringBuilder = builders[0];
+        for (int i1 = 0; i1 < builders.length; i1++) {
+            if (i1 != 0) {
+                stringBuilder.append(builders[i1]);
+            }
+        }
+        return stringBuilder.toString();
     }
 }
