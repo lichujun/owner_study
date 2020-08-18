@@ -7,7 +7,21 @@ package com.lee.owner.leetcode;
 public class IntToRomanSolution {
 
     public static void main(String[] args) {
-        System.out.println(new IntToRomanSolution().intToRoman(60));
+        System.out.println(new IntToRomanSolution().intToRoman1(60));
+    }
+
+    private static final int[] VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    private static final String[] SYMBOLS = {"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+
+    public String intToRoman1(int num) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < VALUES.length; i++) {
+            while (num >= VALUES[i]) {
+                num -= VALUES[i];
+                stringBuilder.append(SYMBOLS[i]);
+            }
+        }
+        return stringBuilder.toString();
     }
 
     private static final int NINE = 9;
